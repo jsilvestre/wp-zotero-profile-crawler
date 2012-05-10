@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Zotero Profile Crawler
-Plugin URI: http://
+Plugin URI: https://github.com/jsilvestre/wp-zotero-profile-crawler
 Description: Gets and displays a CV from Zotero.
 Authors: Joseph Silvestre
 Version: 0.1
