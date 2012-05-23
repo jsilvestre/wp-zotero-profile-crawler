@@ -9,21 +9,22 @@ Author URI: http://github.com/jsilvestre
 
 Heavily based on https://github.com/scholarpress/scholarpress-vitaware
 
-Usage: $zotero_profile_crawler->get_data("<userslug>", Zotero_Profile_Crawler::TYPE_CONTENT||Zotero_Profile_Crawler::TYPE_IMAGE);
+Usage: $zotero_profile_crawler->get_data("<userslug>", Zotero_Profile_Crawler::TYPE_USERNAME||Zotero_Profile_Crawler::TYPE_CONTENT||Zotero_Profile_Crawler::TYPE_IMAGE);
 
 */
 
 if ( !class_exists( 'Zotero_Profile_Crawler' ) ) :
 
 class Zotero_Profile_Crawler {
-    
+
+    const TYPE_USERNAME = "type_username";
     const TYPE_IMAGE = "type_image";
     const TYPE_CONTENT = "type_content";
     
     const CV_SECTION_IDENTIFIER = "profile_cvEntry";
     const CV_IMAGE_IDENTIFIER = "profile_cvEntry";
     
-    private $_data = array(self::TYPE_IMAGE => "", self::TYPE_CONTENT => array());
+    private $_data = array(self::TYPE_USERNAME => "", self::TYPE_IMAGE => "", self::TYPE_CONTENT => array());
     
     function zotero_profile_crawler() {
     }
@@ -53,6 +54,16 @@ class Zotero_Profile_Crawler {
                 }
 
                 $this->_data[self::TYPE_IMAGE] = $dom->getElementById("profile-picture")->getElementsByTagName("img")->item(0)->getAttribute("src");
+                $test = $dom->getElementsByTagName("h1");
+                foreach($test as $t) {
+                    
+                    $name = trim($t->nodeValue);
+                    if(!empty($name) && preg_match("#.*Curriculum Vitae#", $name)) {
+                        $name = substr($name, 0, strpos($name, ':') - 1);
+                        $this->_data[self::TYPE_USERNAME] = $name;
+                    }
+                    
+                }
             }
         }
     }
@@ -74,7 +85,9 @@ class Zotero_Profile_Crawler {
             else {
                 $this->_data = $data;
             }
-        }       
+        }
+        
+        if(empty($this->_data[$type])) return false;
 
         return $this->_data[$type];
     }
