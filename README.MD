@@ -1,5 +1,7 @@
-== Zotero Profile Crawler ==
+Zotero Profile Crawler - Wordpress plugin
+=========================================
 
+*Wordress requirements*
 Requires at least: 3.0
 Tested up to: 3.3.1
 
