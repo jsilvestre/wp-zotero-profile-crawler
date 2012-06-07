@@ -44,9 +44,40 @@ class Zotero_Profile_Crawler {
                 foreach($divElements as $element) {
                     if($element->hasAttribute("class") && $element->getAttribute("class") == self::CV_SECTION_IDENTIFIER) {
                         
+                        $childs = $element->getElementsByTagName('div')->item(0)->childNodes;
+                        $text = "";
+                        foreach($childs as $child) {
+                            
+                            if($child->nodeName == "p") {
+                                if(!empty($text)) {
+                                    $text.="</p>";
+                                }
+                                
+                                $text .= "<p>";
+                                
+                                $grandchilds = $child->childNodes;
+                                foreach($grandchilds as $gchild) {
+                                    
+                                    if($gchild->nodeName == "a") {
+                                        $text .= '<a href="'.$gchild->getAttribute("href").'">'.$gchild->nodeValue.'</a>';
+                                    }
+                                    else {
+                                        $text .= $gchild->nodeValue;
+                                    }
+                                }
+                                
+                            }
+                            elseif($child->nodeName == "a") {
+                                $text .= '<a href="'.$child->getAttribute("href").'">'.$child->nodeValue.'</a>';
+                            }
+                            elseif($child->nodeName == "#text") {
+                                $text.= $child->nodeValue;
+                            }
+                        }
+                        
                         $section = array(
                             'title' => $element->getElementsByTagName('h2')->item(0)->nodeValue,
-                            'text' => trim($element->getElementsByTagName('div')->item(0)->nodeValue, "\t\n "),
+                            'text' => $text
                         );
                         
                         $this->_data[self::TYPE_CONTENT][] = $section;
